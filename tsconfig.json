@@ -14,7 +14,6 @@
     "moduleDetection": "force",
     "noEmit": false,
     "declaration": true,
-    "allowImportingTsExtensions": true,
 
     /* Linting */
     "strict": true,
