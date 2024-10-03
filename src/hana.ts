@@ -1,0 +1,49 @@
+import puppeteer from "puppeteer";
+import * as cheerio from "cheerio";
+import type { Rate } from "./types";
+
+export default class HanaBank {
+  private url =
+    "https://www.hanabank.com/cms/rate/index.do?contentUrl=/cms/rate/wpfxd651_01i.do";
+
+  async fetchRates() {
+    const data: Rate[] = [];
+
+    try {
+      const browser = await puppeteer.launch({
+        headless: false,
+      });
+      const page = await browser.newPage();
+      await page.goto(this.url, {
+        waitUntil: "networkidle2",
+      });
+
+      const content = await page.content();
+      const $ = cheerio.load(content);
+
+      console.log("--------Hana Bank--------");
+      $("tbody tr").each((_, element) => {
+        const country = $(element).find("a u").text().trim().split(" ");
+        const countryName = country.length >= 2 ? country[1] : country[2];
+
+        const buyRate = $(element).find("td:nth-child(2)").text().trim();
+        const sellRate = $(element).find("td:nth-child(4)").text().trim();
+        const baseRate = $(element).find("td:nth-child(9)").text().trim();
+
+        if (countryName) {
+          data.push({
+            name: countryName,
+            buyRate,
+            sellRate,
+            baseRate,
+          });
+        }
+      });
+      await browser.close();
+    } catch (error) {
+      console.log(`hanaBank: ${error}`);
+    } finally {
+      return data;
+    }
+  }
+}
