@@ -14,7 +14,7 @@ export default class IBKBank {
 
     try {
       const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
       });
       const page = await browser.newPage();
       await page.setUserAgent(
