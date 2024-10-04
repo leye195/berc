@@ -11,9 +11,10 @@ export default class KBBank {
 
   async fetchRates() {
     const data: Rate[] = [];
+    let browser;
 
     try {
-      const browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
         headless: true,
       });
       const page = await browser.newPage();
@@ -48,11 +49,11 @@ export default class KBBank {
           baseRate,
         });
       });
-
-      await browser.close();
     } catch (error) {
       console.log(`kbBank: ${error}`);
     } finally {
+      if (browser) await browser.close();
+
       return data;
     }
   }

@@ -8,9 +8,10 @@ export default class HanaBank {
 
   async fetchRates() {
     const data: Rate[] = [];
+    let browser;
 
     try {
-      const browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
         headless: true,
       });
       const page = await browser.newPage();
@@ -46,6 +47,8 @@ export default class HanaBank {
     } catch (error) {
       console.log(`hanaBank: ${error}`);
     } finally {
+      if (browser) await browser.close();
+
       return data;
     }
   }

@@ -11,9 +11,10 @@ export default class IBKBank {
 
   async fetchRates() {
     const data: Rate[] = [];
+    let browser;
 
     try {
-      const browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
         headless: true,
       });
       const page = await browser.newPage();
@@ -51,10 +52,10 @@ export default class IBKBank {
           baseRate,
         });
       });
-      await browser.close();
     } catch (error) {
       console.log(`ibkBank: ${error}`);
     } finally {
+      if (browser) await browser.close();
       return data;
     }
   }
