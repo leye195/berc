@@ -10,12 +10,12 @@ export default class IBKBank {
     const match = input.match(/([가-힣]+)(\d*)([a-zA-Z]+)/);
 
     if (match) {
-      const country = match[1]; // '일본'
-      const amount = match[2] ?? null; // '100'
+      const country = match[1];
+      const amount = match[2] ?? null;
       const currency = match[3];
       return [country, amount, currency];
     } else {
-      return []; // 유효하지 않은 입력 처리
+      return [];
     }
   }
 
