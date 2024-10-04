@@ -2,8 +2,8 @@ import puppeteer from "puppeteer";
 import * as cheerio from "cheerio";
 import type { Rate } from "./types";
 
-export default class KBBank {
-  private url = "https://obank.kbstar.com/quics?page=C101423#loading";
+export default class IBKBank {
+  private url = "https://www.ibk.co.kr/fxtr/excRateList.ibk";
 
   transformRate(rate?: string) {
     return !rate || rate === "-" ? "0.00" : rate;
@@ -14,7 +14,7 @@ export default class KBBank {
 
     try {
       const browser = await puppeteer.launch({
-        headless: true,
+        headless: false,
       });
       const page = await browser.newPage();
       await page.setUserAgent(
@@ -27,15 +27,18 @@ export default class KBBank {
       const content = await page.content();
       const $ = cheerio.load(content);
 
-      console.log("--------KB Bank--------");
-      $("#inqueryTable > table:nth-child(2) > tbody tr").each((_, element) => {
-        const country = $(element).find("td:nth-child(1) > a").text().trim();
+      console.log("--------IBK Bank--------");
+      $("table.tbl_basic > tbody tr").each((_, element) => {
+        const country = $(element).find("th:nth-child(1) > a").text().trim();
+
         const buyRate = this.transformRate(
-          $(element).find("td:nth-child(6)").text().trim()
+          $(element).find("td:nth-child(6)").text().trim().split("\n")[0]
         );
+
         const sellRate = this.transformRate(
-          $(element).find("td:nth-child(7)").text().trim()
+          $(element).find("td:nth-child(7)").text().trim().split("\n")[0]
         );
+
         const baseRate = this.transformRate(
           $(element).find("td:nth-child(3)").text().trim()
         );
@@ -48,10 +51,9 @@ export default class KBBank {
           baseRate,
         });
       });
-
       await browser.close();
     } catch (error) {
-      console.log(`kbBank: ${error}`);
+      console.log(`ibkBank: ${error}`);
     } finally {
       return data;
     }
